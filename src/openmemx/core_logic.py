@@ -1,6 +1,4 @@
-import math
-import json
-from typing import List, Dict, Any, Tuple
+from typing import List
 from sentence_transformers import SentenceTransformer
 import numpy as np
 import ssl
@@ -51,7 +49,6 @@ class PromptCompressor:
     def __init__(self):
         # LLMLingua-2 proxy or integration
         # Note: llmlingua requires a model to be loaded.
-        from llmlingua import PromptCompressor as LLMCompressor
         self.compressor = None # Delay initialization to avoid startup lag
 
     def compress(self, context: str, instruction: str = "", target_token: int = 500) -> str:

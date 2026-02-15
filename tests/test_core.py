@@ -3,7 +3,7 @@ import os
 import shutil
 import pytest
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from openmemx import MemoryEngine
 from openmemx.mcp_server import UniversalLogIngester
 
@@ -50,7 +50,7 @@ def test_universal_ingestion_logic():
     os.makedirs(tmp_path)
     
     log_file = os.path.join(tmp_path, "external.jsonl")
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     
     # Mock some external agent activity
     with open(log_file, "w") as f:

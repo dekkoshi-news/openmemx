@@ -1,18 +1,16 @@
 import os
-import sqlite3
 import lancedb
 import pygit2
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional, Dict, Any
 from .core_logic import MemoryLogic, PromptCompressor
 from sqlmodel import SQLModel, Field, create_engine, Session, select
-import numpy as np
 import json
 
 # Models for SQLite
 class Interaction(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     role: str
     content: str
     surprise_score: float = 0.0
@@ -94,12 +92,12 @@ class MemoryEngine:
             "content": content,
             "role": role,
             "conversation_id": conversation_id,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }]
 
         try:
             table = self.lancedb.open_table(table_name)
-        except:
+        except Exception:
             table = self.lancedb.create_table(table_name, data=data_packet)
         else:
             table.add(data_packet)
@@ -118,7 +116,7 @@ class MemoryEngine:
         parent = []
         try:
             parent = [self.repo.head.target]
-        except:
+        except Exception:
             pass
             
         self.repo.create_commit('HEAD', author, committer, message, tree, parent)
@@ -133,8 +131,8 @@ class MemoryEngine:
         """
         Fetches all interactions from all conversations within the last N hours.
         """
-        from datetime import timedelta
-        cutoff = datetime.utcnow() - timedelta(hours=hours)
+        from datetime import timedelta, timezone
+        cutoff = datetime.now(timezone.utc) - timedelta(hours=hours)
         with Session(self.sqlite_engine) as session:
             statement = select(Interaction).where(Interaction.timestamp >= cutoff).order_by(Interaction.timestamp.desc())
             results = session.exec(statement).all()

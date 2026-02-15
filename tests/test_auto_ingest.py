@@ -2,6 +2,7 @@
 import asyncio
 import os
 import shutil
+import pytest
 from openmemx.mcp_server import (
     configure_auto_ingest, 
     retrieve_memory, 
@@ -10,6 +11,7 @@ from openmemx.mcp_server import (
     get_auto_ingest_status
 )
 
+@pytest.mark.asyncio
 async def test_auto_ingest_flow():
     print("Testing Auto-Ingest Feature...")
     

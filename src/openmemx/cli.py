@@ -13,7 +13,7 @@ def update_json_config(path, key_path, config_val):
         with open(path, 'r') as f:
             try:
                 data = json.load(f)
-            except:
+            except Exception:
                 data = {}
 
     # Navigate to mcpServers

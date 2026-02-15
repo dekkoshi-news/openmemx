@@ -2,7 +2,7 @@
 import os
 import json
 import glob
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Any, Optional
 
 class UniversalLogIngester:
@@ -19,12 +19,12 @@ class UniversalLogIngester:
     def scan_all(self, hours: int = 24) -> List[Dict[str, Any]]:
         activities = []
         # Calculate naive cutoff timestamp
-        cutoff_ts = (datetime.utcnow().timestamp()) - (hours * 3600)
+        cutoff_ts = (datetime.now(timezone.utc).timestamp()) - (hours * 3600)
         
         for source in self.sources:
             try:
                 activities.extend(self._scan_source(source, cutoff_ts))
-            except Exception as e:
+            except Exception:
                 # Log error but don't crash
                 # print(f"Error scanning source {source.get('name')}: {e}")
                 pass
@@ -58,7 +58,8 @@ class UniversalLogIngester:
 
     def _extract_field(self, record: Dict[str, Any], field_path: str) -> Any:
         """Helper to extract nested fields like 'metadata.created_at'"""
-        if not field_path: return None
+        if not field_path:
+            return None
         keys = field_path.split('.')
         val = record
         for k in keys:
@@ -70,11 +71,13 @@ class UniversalLogIngester:
 
     def _parse_timestamp(self, ts_val: Any) -> Optional[float]:
         """ Tries to parse a timestamp into float seconds """
-        if not ts_val: return None
+        if not ts_val:
+            return None
         if isinstance(ts_val, (int, float)):
             # Assume seconds if small, milliseconds?
             # Heuristic: 2020 in seconds > 1.5e9
-            if ts_val > 1e11: return ts_val / 1000.0
+            if ts_val > 1e11:
+                return ts_val / 1000.0
             return float(ts_val)
         
         if isinstance(ts_val, str):
@@ -82,7 +85,7 @@ class UniversalLogIngester:
                 # Try ISO
                 dt = datetime.fromisoformat(ts_val.replace("Z", "+00:00"))
                 return dt.timestamp()
-            except:
+            except Exception:
                 pass
         return None
 
@@ -129,14 +132,16 @@ class UniversalLogIngester:
         try:
             with open(path, 'r', encoding='utf-8', errors='ignore') as f:
                 for line in f:
-                    if not line.strip(): continue
+                    if not line.strip():
+                        continue
                     try:
                         record = json.loads(line)
                         item = self._map_record(record, name, mapping, file_ts, cutoff_ts)
-                        if item: items.append(item)
-                    except:
+                        if item:
+                            items.append(item)
+                    except Exception:
                         continue
-        except:
+        except Exception:
             pass
         return items
 
@@ -156,8 +161,9 @@ class UniversalLogIngester:
                 
                 for record in records:
                     item = self._map_record(record, name, mapping, file_ts, cutoff_ts)
-                    if item: items.append(item)
-        except:
+                    if item:
+                        items.append(item)
+        except Exception:
             pass
         return items
 
@@ -166,7 +172,8 @@ class UniversalLogIngester:
         # For now: Timestamp = file mtime, Content = line
         items = []
         file_ts = os.path.getmtime(path)
-        if file_ts < cutoff_ts: return []
+        if file_ts < cutoff_ts:
+            return []
         
         try:
             with open(path, 'r', encoding='utf-8', errors='ignore') as f:
@@ -174,7 +181,8 @@ class UniversalLogIngester:
                 lines = f.readlines()[-100:]
                 for line in lines:
                     line = line.strip()
-                    if not line: continue
+                    if not line:
+                        continue
                     items.append({
                         "source": name,
                         "project": "Log File",
@@ -182,6 +190,6 @@ class UniversalLogIngester:
                         "role": "system",
                         "content": line
                     })
-        except:
+        except Exception:
             pass
         return items

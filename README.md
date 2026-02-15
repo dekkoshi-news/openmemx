@@ -174,5 +174,36 @@ Even with isolated project memories, your agent maintains a global view.
 
 ---
 
+## 🛠 Developer & Release Process
+
+OpenMemX uses a standardized release process to ensure stability.
+
+### 1. Local Development
+Clone the repo and install dependencies in a virtual environment:
+```bash
+git clone https://github.com/dekkoshi-news/openmemx.git
+cd openmemx
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .[dev]
+```
+
+### 2. Pre-release Checks
+Before every release, run the check script to verify tests, linting, and build integrity:
+```bash
+./scripts/release.sh
+```
+
+### 3. Creating a Release
+To release a new version (e.g., `1.1.0`):
+1. Use the release script to bump the version: `./scripts/release.sh 1.1.0`.
+2. Update `CHANGELOG.md`.
+3. Create a git tag: `git tag v1.1.0`.
+4. Push to main: `git push origin main --tags`.
+
+The project is configured with **Trusted Publishing (OIDC)**. Once you push a tag and create a "Release" on GitHub, the GitHub Action will automatically build and publish the package to PyPI.
+
+---
+
 ## 📜 License & Research
 OpenMemX is based on the research report: *Computational Architectures for Efficient Long-Term Memory in Localized Agentic Systems.* See the `doc/` folder for the full whitepaper.

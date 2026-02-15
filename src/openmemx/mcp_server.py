@@ -3,17 +3,14 @@ import os
 import json
 import uuid
 from datetime import datetime
-from functools import wraps
 
 # Redirect stdout to stderr immediately to catch all library noise during imports
 _original_stdout = sys.stdout
 sys.stdout = sys.stderr
 
-import asyncio
-from mcp.server.fastmcp import FastMCP
-from typing import List, Optional, Dict, Any
-import logging
-from .ingestion import UniversalLogIngester
+from mcp.server.fastmcp import FastMCP  # noqa: E402
+from typing import Optional, Dict, Any  # noqa: E402
+from .ingestion import UniversalLogIngester  # noqa: E402
 
 # Suppress Transformers/HF logs from stdout
 os.environ["TRANSFORMERS_VERBOSITY"] = "error"
@@ -123,7 +120,7 @@ def load_project_registry():
         try:
             with open(path, 'r') as f:
                 return json.load(f)
-        except:
+        except Exception:
             return {}
     return {}
 
