@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openmemx"
+version = "1.0.0"
+description = "Intelligent, token-optimized memory stack for AI agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [
+    {name = "OpenMemX Contributors", email = "contact@openmemx.ai"}
+]
+dependencies = [
+    "mcp",
+    "lancedb",
+    "pandas",
+    "pygit2",
+    "sentence-transformers",
+    "sqlmodel",
+    "llmlingua",
+    "certifi",
+    "numpy"
+]
+
+[project.urls]
+Homepage = "https://github.com/dekkoshi-news/openmemx"
+Repository = "https://github.com/dekkoshi-news/openmemx"
+
+[project.scripts]
+openmemx = "openmemx.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
