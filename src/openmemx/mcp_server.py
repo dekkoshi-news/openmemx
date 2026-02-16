@@ -228,7 +228,7 @@ async def retrieve_memory(conversation_id: str, query: str, limit: int = 5) -> s
     # Search the master vector table (contains all previous sessions)
     table_name = "master_vectors"
     try:
-        if table_name not in engine.lancedb.table_names():
+        if table_name not in engine.lancedb.table_names():  # noqa: DEP001
             return "No memories have been recorded yet. Call ingest_interaction to start building your knowledge base."
             
         table = engine.lancedb.open_table(table_name)

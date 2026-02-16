@@ -1,3 +1,3 @@
 __version__ = "1.0.0"
 from .memory_engine import MemoryEngine as MemoryEngine
-from .mcp_server import mcp as mcp
+# Note: mcp_server is not imported here to avoid circular imports when running as module
